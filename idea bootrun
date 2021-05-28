@@ -1,0 +1,18 @@
+bootRun {
+    dependsOn 'archiveClasspath'
+    doFirst {
+        classpath = files(sourceSets.main.output.files, archiveClasspath.archivePath)
+
+    }
+}
+task archiveClasspath(type: Jar) {
+    dependsOn configurations.runtime
+    appendix = 'pathing'
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect {
+                it.toURL().toString().replaceFirst('/file:/+/', '/')
+            }.join(' ')
+        }
+    }
+}
